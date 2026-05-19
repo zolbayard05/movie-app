@@ -1,16 +1,19 @@
-import MovieCard from "@/components/MovieCard";
-import { CarouselContainer } from "@/components/Carousel";
+import { CarouselContainer } from "@/components/CarouselContainer";
+import MovieGroup from "@/components/MovieGroup";
+import {
+  upcomingMovies,
+  popularMovies,
+  topRatedMovies,
+} from "@/components/MovieData";
 
-let Home = () => {
+export default function Home() {
   return (
-    <div>
-      <MovieCard
-        image="/dragon.jpg"
-        title="How To Train Your Dragon"
-        rating={6.9}
-      />
+    <main className="min-h-screen bg-white">
       <CarouselContainer />
-    </div>
+
+      <MovieGroup title="Upcoming" movies={upcomingMovies} />
+      <MovieGroup title="Popular" movies={popularMovies} />
+      <MovieGroup title="Top Rated" movies={topRatedMovies} />
+    </main>
   );
-};
-export default Home;
+}
