@@ -1,39 +1,64 @@
-import { ArrowRight } from "lucide-react";
 import MovieCard from "./MovieCard";
-
-type Movie = {
-  title: string;
-  rating: number;
-  image: string;
-};
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import type { Movie } from "@/app/page";
 
 type MovieGroupProps = {
   title: string;
   movies: Movie[];
+  page: number;
+  setPage: (page: number) => void;
 };
 
-export default function MovieGroup({ title, movies }: MovieGroupProps) {
+export default function MovieGroup({
+  title,
+  movies,
+  page,
+  setPage,
+}: MovieGroupProps) {
+  const handlePrevious = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const handleNext = () => {
+    setPage(page + 1);
+  };
+
   return (
-    <section className="px-10 py-14 md:px-20">
-      <div className="mb-10 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{title}</h2>
+    <section className="px-8 py-6">
+      <h2 className="mb-4 text-2xl font-bold">{title}</h2>
 
-        <button className="flex items-center gap-2 text-sm">
-          See more
-          <ArrowRight size={16} />
-        </button>
-      </div>
-
-      <div className="grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-5">
         {movies.map((movie, index) => (
           <MovieCard
             key={index}
-            image={movie.image}
             title={movie.title}
             rating={movie.rating}
+            image={movie.image}
           />
         ))}
       </div>
+
+      <Pagination className="mt-8">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious onClick={handlePrevious} />
+          </PaginationItem>
+
+          <PaginationItem>
+            <span className="px-4 text-sm font-medium">Page {page}</span>
+          </PaginationItem>
+
+          <PaginationItem>
+            <PaginationNext onClick={handleNext} />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </section>
   );
 }

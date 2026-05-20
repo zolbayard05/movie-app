@@ -1,6 +1,4 @@
-"use client";
-
-import { Play, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
@@ -8,45 +6,47 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { heroMovies } from "@/components/MovieData";
+import { Play, Star } from "lucide-react";
+import type { Movie } from "@/app/page";
 
-export function CarouselContainer() {
+type CarouselContainerProps = {
+  movies: Movie[];
+};
+
+export function CarouselContainer({ movies }: CarouselContainerProps) {
+  const heroMovies = movies.slice(0, 5);
+
   return (
     <Carousel className="w-full">
       <CarouselContent>
         {heroMovies.map((movie, index) => (
           <CarouselItem key={index}>
-            <section className="relative h-[560px] overflow-hidden">
-              <img
-                src={movie.image}
-                alt={movie.title}
-                className="absolute inset-0 h-full w-full object-cover"
-              />
+            <div
+              className="relative h-[600px] w-full bg-cover bg-center"
+              style={{ backgroundImage: `url(${movie.backdrop})` }}
+            >
+              <div className="absolute inset-0 bg-black/30" />
 
-              <div className="absolute inset-0 bg-black/35" />
+              <div className="relative z-10 flex h-full max-w-[1200px] flex-col justify-center px-10 text-white md:px-24">
+                <p className="text-lg">Now Playing:</p>
 
-              <div className="relative z-10 flex h-full items-center px-10 md:px-24">
-                <div className="max-w-[360px] text-white">
-                  <p className="mb-1 text-base">Now Playing:</p>
+                <h1 className="text-5xl font-bold">{movie.title}</h1>
 
-                  <h1 className="mb-2 text-4xl font-bold">{movie.title}</h1>
-
-                  <div className="mb-8 flex items-center gap-2">
-                    <Star className="fill-yellow-400 text-yellow-400" />
-                    <span className="text-xl font-semibold">
-                      {movie.rating}
-                    </span>
-                  </div>
-
-                  <p className="mb-6 text-sm leading-5">{movie.description}</p>
-
-                  <button className="flex items-center gap-2 rounded-md bg-white px-5 py-3 text-sm text-black">
-                    <Play size={16} />
-                    Watch Trailer
-                  </button>
+                <div className="mt-4 flex items-center gap-2">
+                  <Star className="fill-yellow-400 text-yellow-400" />
+                  <span className="text-xl">{movie.rating.toFixed(1)}</span>
                 </div>
+
+                <p className="mt-6 max-w-[360px] text-sm leading-5">
+                  {movie.overview}
+                </p>
+
+                <Button className="mt-6 w-fit bg-white text-black hover:bg-white/90">
+                  <Play size={16} />
+                  Watch Trailer
+                </Button>
               </div>
-            </section>
+            </div>
           </CarouselItem>
         ))}
       </CarouselContent>
