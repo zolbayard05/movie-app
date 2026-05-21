@@ -13,7 +13,7 @@ export default function MovieCard({ image, title, rating }: MovieCardProps) {
         <img
           src={image}
           alt={title}
-          className="h-[340px] w-full object-cover"
+          className="h-[450px] w-full object-cover"
         />
       )}
 

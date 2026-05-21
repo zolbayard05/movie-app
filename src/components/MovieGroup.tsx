@@ -30,10 +30,10 @@ export default function MovieGroup({
   };
 
   return (
-    <section className="px-8 py-6">
-      <h2 className="mb-4 text-2xl font-bold">{title}</h2>
+    <section className="px-40 py-10">
+      <h1 className="mb-4 text-4xl font-bold pb-5">{title}</h1>
 
-      <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-10 md:grid-cols-3 lg:grid-cols-5">
         {movies.map((movie, index) => (
           <MovieCard
             key={index}
