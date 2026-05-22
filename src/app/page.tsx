@@ -2,6 +2,7 @@
 
 import { CarouselContainer } from "@/components/CarouselContainer";
 import MovieGroup from "@/components/MovieGroup";
+import Navbar from "@/components/Navbar";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -80,6 +81,8 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white">
+      <Navbar />
+
       <CarouselContainer movies={nowPlayingMovies} />
 
       <MovieGroup
