@@ -8,22 +8,24 @@ type MovieCardProps = {
 
 export default function MovieCard({ image, title, rating }: MovieCardProps) {
   return (
-    <div className="overflow-hidden rounded-lg bg-[#f4f4f4]">
+    <div className="overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
       {image && (
         <img
           src={image}
           alt={title}
-          className="h-[450px] w-full object-cover"
+          className="h-[300px] w-full object-cover"
         />
       )}
 
-      <div className="p-3">
-        <div className="mb-2 flex items-center gap-1">
-          <Star size={16} className="fill-yellow-400 text-yellow-400" />
-          <span className="text-sm">{rating.toFixed(1)}/10</span>
+      <div className="space-y-2 p-4">
+        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+          <span>{rating.toFixed(1)}/10</span>
         </div>
 
-        <h3 className="text-lg font-medium leading-6">{title}</h3>
+        <h3 className="line-clamp-2 min-h-12 font-semibold text-card-foreground">
+          {title}
+        </h3>
       </div>
     </div>
   );

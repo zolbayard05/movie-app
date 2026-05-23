@@ -22,12 +22,12 @@ export function CarouselContainer({ movies }: CarouselContainerProps) {
         {heroMovies.map((movie, index) => (
           <CarouselItem key={index}>
             <div
-              className="relative h-[800px] w-full bg-cover bg-center"
+              className="relative h-200 w-full bg-cover bg-center"
               style={{ backgroundImage: `url(${movie.backdrop})` }}
             >
               <div className="absolute inset-0 bg-black/30" />
 
-              <div className="relative z-10 flex h-full max-w-[1200px] flex-col justify-center px-10 text-white md:px-24">
+              <div className="relative z-10 flex h-full max-w-300 flex-col justify-center px-10 text-white md:px-24">
                 <p className="text-lg">Now Playing:</p>
 
                 <h1 className="text-5xl font-bold">{movie.title}</h1>
@@ -37,7 +37,7 @@ export function CarouselContainer({ movies }: CarouselContainerProps) {
                   <span className="text-xl">{movie.rating.toFixed(1)}</span>
                 </div>
 
-                <p className="mt-6 max-w-[360px] text-sm leading-5">
+                <p className="mt-6 max-w-90 text-sm leading-5">
                   {movie.overview}
                 </p>
 
