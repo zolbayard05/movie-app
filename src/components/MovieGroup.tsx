@@ -28,8 +28,14 @@ export default function MovieGroup({
       </div>
 
       <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
-        {movies.slice(0, 10).map((movie, index) => (
-          <MovieCard key={`${movie.title}-${index}`} {...movie} />
+        {movies.slice(0, 10).map((movie) => (
+          <MovieCard
+            key={movie.id}
+            id={movie.id}
+            image={movie.image}
+            title={movie.title}
+            rating={movie.rating}
+          />
         ))}
       </div>
     </section>

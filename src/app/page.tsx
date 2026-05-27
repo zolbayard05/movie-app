@@ -10,6 +10,7 @@ import CategoryView from "@/components/CategoryPage";
 import { CarouselContainer } from "@/components/CarouselContainer";
 
 export type Movie = {
+  id: number;
   title: string;
   rating: number;
   image: string;
@@ -18,6 +19,7 @@ export type Movie = {
 };
 
 type TmdbMovie = {
+  id: number;
   title: string;
   vote_average: number;
   poster_path: string | null;
@@ -50,6 +52,7 @@ export default function Home() {
     );
 
     const movieData = response.data.results.map((movie: TmdbMovie) => ({
+      id: movie.id,
       title: movie.title,
       rating: movie.vote_average,
       image: movie.poster_path
