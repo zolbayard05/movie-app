@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -41,10 +42,12 @@ export function CarouselContainer({ movies }: CarouselContainerProps) {
                   {movie.overview}
                 </p>
 
-                <Button className="mt-6 w-fit bg-white text-black hover:bg-white/90">
-                  <Play size={16} />
-                  Watch Trailer
-                </Button>
+                <Link href={`/movie/${movie.id}`}>
+                  <Button className="mt-6 w-fit bg-white text-black hover:bg-white/90">
+                    <Play size={16} />
+                    Watch Trailer
+                  </Button>
+                </Link>
               </div>
             </div>
           </CarouselItem>

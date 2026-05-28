@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/pagination";
 
 type Movie = {
+  id: number;
   title: string;
   rating: number;
   image: string;
@@ -22,6 +23,7 @@ type Movie = {
 };
 
 type TmdbMovie = {
+  id: number;
   title: string;
   vote_average: number;
   poster_path: string | null;
@@ -95,6 +97,7 @@ export default function CategoryView({
         );
 
         const movieData = currentPageResults.map((movie) => ({
+          id: movie.id,
           title: movie.title,
           rating: movie.vote_average,
           image: movie.poster_path
@@ -157,8 +160,8 @@ export default function CategoryView({
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:grid-cols-5">
-          {movies.map((movie, index) => (
-            <MovieCard key={`${movie.title}-${index}`} {...movie} />
+          {movies.map((movie) => (
+            <MovieCard key={movie.id} {...movie} />
           ))}
         </div>
       )}

@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import MovieGroup from "@/components/MovieGroup";
 import CategoryView from "@/components/CategoryPage";
 import { CarouselContainer } from "@/components/CarouselContainer";
+import HomePageSkeleton from "@/components/HomePageSkeleton";
 
 export type Movie = {
   id: number;
@@ -29,6 +30,7 @@ type TmdbMovie = {
 
 export default function Home() {
   const [nowPlayingMovies, setNowPlayingMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(true);
   const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>([]);
   const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
   const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([]);
@@ -42,37 +44,53 @@ export default function Home() {
     group: "now_playing" | "upcoming" | "popular" | "top_rated",
     setMovieData: (movies: Movie[]) => void,
   ) => {
-    const response = await axios.get(
-      `https://api.themoviedb.org/3/movie/${group}?language=en-US&page=1`,
-      {
-        headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwOWI4YTA3MzQ4ZGQ0YzI5NDM0ZDNjOTVmZTE4MDM1MCIsIm5iZiI6MTc3OTI3NDQyNS45OSwic3ViIjoiNmEwZDkyYjlmNGM0M2VmMTNjYjgxNWQ3Iiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.-P7ht59CToEV7YtGXVaI6zqc-VOe-Rwkn_x1uLA3n6I`,
+    try {
+      const response = await axios.get(
+        `https://api.themoviedb.org/3/movie/${group}?language=en-US&page=1`,
+        {
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwOWI4YTA3MzQ4ZGQ0YzI5NDM0ZDNjOTVmZTE4MDM1MCIsIm5iZiI6MTc3OTI3NDQyNS45OSwic3ViIjoiNmEwZDkyYjlmNGM0M2VmMTNjYjgxNWQ3Iiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.-P7ht59CToEV7YtGXVaI6zqc-VOe-Rwkn_x1uLA3n6I`,
+          },
         },
-      },
-    );
+      );
 
-    const movieData = response.data.results.map((movie: TmdbMovie) => ({
-      id: movie.id,
-      title: movie.title,
-      rating: movie.vote_average,
-      image: movie.poster_path
-        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-        : "",
-      backdrop: movie.backdrop_path
-        ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
-        : "",
-      overview: movie.overview,
-    }));
+      const movieData = response.data.results.map((movie: TmdbMovie) => ({
+        id: movie.id,
+        title: movie.title,
+        rating: movie.vote_average,
+        image: movie.poster_path
+          ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+          : "",
+        backdrop: movie.backdrop_path
+          ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
+          : "",
+        overview: movie.overview,
+      }));
 
-    setMovieData(movieData);
+      setMovieData(movieData);
+    } catch (error) {
+      console.error(`Failed to fetch ${group}:`, error);
+    }
   };
 
   useEffect(() => {
-    fetchMovies("now_playing", setNowPlayingMovies);
-    fetchMovies("upcoming", setUpcomingMovies);
-    fetchMovies("popular", setPopularMovies);
-    fetchMovies("top_rated", setTopRatedMovies);
+    Promise.all([
+      fetchMovies("now_playing", setNowPlayingMovies),
+      fetchMovies("upcoming", setUpcomingMovies),
+      fetchMovies("popular", setPopularMovies),
+      fetchMovies("top_rated", setTopRatedMovies),
+    ]).finally(() => setLoading(false));
   }, []);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-background text-foreground">
+        <Navbar />
+        <HomePageSkeleton />
+        <Footer />
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-background text-foreground">
