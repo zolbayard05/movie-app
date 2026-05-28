@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import MovieCard from "@/components/MovieCard";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,71 +52,71 @@ export default function CategoryView({
 
   const totalPages = Math.ceil(totalMovieCount / MOVIES_PER_PAGE);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: setPage is stable
   useEffect(() => {
     setPage(1);
   }, [category]);
 
-  useEffect(() => {
-    const fetchMovies = async () => {
-      setLoading(true);
+  const fetchMovies = useCallback(async () => {
+    setLoading(true);
+    try {
+      const startIndex = (page - 1) * MOVIES_PER_PAGE;
+      const endIndex = startIndex + MOVIES_PER_PAGE;
 
-      try {
-        const startIndex = (page - 1) * MOVIES_PER_PAGE;
-        const endIndex = startIndex + MOVIES_PER_PAGE;
+      const startApiPage = Math.floor(startIndex / TMDB_PER_PAGE) + 1;
+      const endApiPage = Math.floor((endIndex - 1) / TMDB_PER_PAGE) + 1;
 
-        const startApiPage = Math.floor(startIndex / TMDB_PER_PAGE) + 1;
-        const endApiPage = Math.floor((endIndex - 1) / TMDB_PER_PAGE) + 1;
+      const requests = [];
 
-        const requests = [];
-
-        for (let apiPage = startApiPage; apiPage <= endApiPage; apiPage++) {
-          requests.push(
-            axios.get(
-              `https://api.themoviedb.org/3/movie/${category}?language=en-US&page=${apiPage}`,
-              {
-                headers: {
-                  Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwOWI4YTA3MzQ4ZGQ0YzI5NDM0ZDNjOTVmZTE4MDM1MCIsIm5iZiI6MTc3OTI3NDQyNS45OSwic3ViIjoiNmEwZDkyYjlmNGM0M2VmMTNjYjgxNWQ3Iiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.-P7ht59CToEV7YtGXVaI6zqc-VOe-Rwkn_x1uLA3n6I`,
-                },
+      for (let apiPage = startApiPage; apiPage <= endApiPage; apiPage++) {
+        requests.push(
+          axios.get(
+            `https://api.themoviedb.org/3/movie/${category}?language=en-US&page=${apiPage}`,
+            {
+              headers: {
+                Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwOWI4YTA3MzQ4ZGQ0YzI5NDM0ZDNjOTVmZTE4MDM1MCIsIm5iZiI6MTc3OTI3NDQyNS45OSwic3ViIjoiNmEwZDkyYjlmNGM0M2VmMTNjYjgxNWQ3Iiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.-P7ht59CToEV7YtGXVaI6zqc-VOe-Rwkn_x1uLA3n6I`,
               },
-            ),
-          );
-        }
-
-        const responses = await Promise.all(requests);
-
-        setTotalMovieCount(responses[0].data.total_results);
-
-        const combinedResults: TmdbMovie[] = responses.flatMap(
-          (response) => response.data.results,
+            },
+          ),
         );
-
-        const sliceStart = startIndex % TMDB_PER_PAGE;
-        const currentPageResults = combinedResults.slice(
-          sliceStart,
-          sliceStart + MOVIES_PER_PAGE,
-        );
-
-        const movieData = currentPageResults.map((movie) => ({
-          id: movie.id,
-          title: movie.title,
-          rating: movie.vote_average,
-          image: movie.poster_path
-            ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-            : "",
-          backdrop: movie.backdrop_path
-            ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
-            : "",
-          overview: movie.overview,
-        }));
-
-        setMovies(movieData);
-      } finally {
-        setLoading(false);
       }
-    };
 
-    fetchMovies();
+      const responses = await Promise.all(requests);
+
+      setTotalMovieCount(responses[0].data.total_results);
+
+      const combinedResults: TmdbMovie[] = responses.flatMap(
+        (response) => response.data.results,
+      );
+
+      const sliceStart = startIndex % TMDB_PER_PAGE;
+      const currentPageResults = combinedResults.slice(
+        sliceStart,
+        sliceStart + MOVIES_PER_PAGE,
+      );
+
+      const movieData = currentPageResults.map((movie) => ({
+        id: movie.id,
+        title: movie.title,
+        rating: movie.vote_average,
+        image: movie.poster_path
+          ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+          : "",
+        backdrop: movie.backdrop_path
+          ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
+          : "",
+        overview: movie.overview,
+      }));
+
+      setMovies(movieData);
+    } finally {
+      setLoading(false);
+    }
   }, [category, page]);
+
+  useEffect(() => {
+    fetchMovies();
+  }, [fetchMovies]);
 
   const paginationItems = useMemo(() => {
     const pages: number[] = [];

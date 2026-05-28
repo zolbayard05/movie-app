@@ -129,7 +129,10 @@
   }
 }
 
-::view-transition-old(root), ::view-transition-new(root) {
-    animation: none;
-    mix-blend-mode: normal;
+/* biome-ignore lint/correctness/noUnknownTypeSelector: valid CSS */
+::view-transition-old(root),
+/* biome-ignore lint/correctness/noUnknownTypeSelector: valid CSS */
+  ::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }

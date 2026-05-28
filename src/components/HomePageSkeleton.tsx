@@ -19,7 +19,7 @@ export default function HomePageSkeleton() {
             </div>
             {/* Cards */}
             <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
-              {Array.from({ length: 10 }).map((_, i) => (
+              {Array.from({ length: 10 }, (_, i) => i).map((i) => (
                 <div
                   key={i}
                   className="overflow-hidden rounded-2xl border border-border bg-card"

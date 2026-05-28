@@ -1,4 +1,6 @@
+import { Play, Star } from "lucide-react";
 import Link from "next/link";
+import type { Movie } from "@/app/page";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -7,8 +9,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Play, Star } from "lucide-react";
-import type { Movie } from "@/app/page";
 
 type CarouselContainerProps = {
   movies: Movie[];
@@ -20,8 +20,8 @@ export function CarouselContainer({ movies }: CarouselContainerProps) {
   return (
     <Carousel className="w-full">
       <CarouselContent>
-        {heroMovies.map((movie, index) => (
-          <CarouselItem key={index}>
+        {heroMovies.map((movie) => (
+          <CarouselItem key={movie.id}>
             <div
               className="relative h-200 w-full bg-cover bg-center"
               style={{ backgroundImage: `url(${movie.backdrop})` }}

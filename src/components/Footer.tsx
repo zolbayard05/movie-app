@@ -48,7 +48,7 @@ const Footer = () => {
 
             <div className="flex gap-3">
               <a
-                href="#"
+                href="/"
                 aria-label="Facebook"
                 className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-card-foreground transition hover:-translate-y-1 hover:bg-accent"
               >
@@ -56,7 +56,7 @@ const Footer = () => {
               </a>
 
               <a
-                href="#"
+                href="/"
                 aria-label="Instagram"
                 className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-card-foreground transition hover:-translate-y-1 hover:bg-accent"
               >
@@ -64,7 +64,7 @@ const Footer = () => {
               </a>
 
               <a
-                href="#"
+                href="/"
                 aria-label="TikTok"
                 className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-card-foreground transition hover:-translate-y-1 hover:bg-accent"
               >

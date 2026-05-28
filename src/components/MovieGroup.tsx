@@ -1,6 +1,6 @@
+import { ArrowRight } from "lucide-react";
 import type { Movie } from "@/app/page";
 import MovieCard from "./MovieCard";
-import { ArrowRight } from "lucide-react";
 
 type MovieGroupProps = {
   title: string;
@@ -19,6 +19,7 @@ export default function MovieGroup({
         <h2 className="text-2xl font-bold">{title}</h2>
 
         <button
+          type="button"
           onClick={onSeeMore}
           className="flex items-center gap-2 text-sm font-medium text-primary hover:underline"
         >

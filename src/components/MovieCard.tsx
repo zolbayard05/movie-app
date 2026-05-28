@@ -1,5 +1,6 @@
-import Link from "next/link";
 import { Star } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 type MovieCardProps = {
   id: number;
@@ -18,10 +19,13 @@ export default function MovieCard({
     <Link href={`/movie/${id}`}>
       <div className="overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
         {image && (
-          <img
+          <Image
             src={image}
             alt={title}
-            className="h-[300px] w-full object-cover"
+            width={500}
+            height={300}
+            className="object-cover"
+            style={{ width: "100%", height: "300px" }}
           />
         )}
 

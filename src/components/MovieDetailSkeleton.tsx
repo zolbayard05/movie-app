@@ -16,9 +16,9 @@ export default function MovieDetailSkeleton() {
 
         {/* Genre tags */}
         <div className="mb-4 flex gap-2">
-          {[80, 100, 72, 90, 78].map((w, i) => (
+          {[80, 100, 72, 90, 78].map((w) => (
             <Skeleton
-              key={i}
+              key={w}
               className="h-7 rounded-full"
               style={{ width: w }}
             />
@@ -47,8 +47,8 @@ export default function MovieDetailSkeleton() {
             <Skeleton className="h-4 w-20" />
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i}>
+            {["a", "b", "c", "d", "e"].map((id) => (
+              <div key={id}>
                 <Skeleton className="mb-2 h-[200px] w-full rounded-xl" />
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="mt-1 h-3 w-12" />
