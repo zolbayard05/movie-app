@@ -1,12 +1,14 @@
 "use client";
 
-import { Play, Star } from "lucide-react";
+import { Play, Star, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import ReactPlayer from "react-player";
 
 import MovieDetailSkeleton from "@/components/MovieDetailSkeleton";
+import Navbar from "@/components/Navbar";
 
 const IMAGE = "https://image.tmdb.org/t/p/w500";
 const BACKDROP = "https://image.tmdb.org/t/p/original";
@@ -51,9 +53,12 @@ interface MovieDetail {
   genres?: Genre[];
   overview?: string;
   credits?: { crew: CrewMember[]; cast: CastMember[] };
-  videos?: { results: VideoItem[] };
   similar?: { results: SimilarMovie[] };
   success?: boolean;
+}
+
+interface VideoResponse {
+  results: VideoItem[];
 }
 
 function formatRuntime(minutes: number) {
@@ -71,25 +76,57 @@ export default function MovieDetailsPage() {
   const id = params.id as string;
 
   const [movie, setMovie] = useState<MovieDetail | null>(null);
+  const [trailer, setTrailer] = useState<VideoItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showPlayer, setShowPlayer] = useState(false);
 
   useEffect(() => {
-    const getMovie = async () => {
+    const load = async () => {
       try {
-        const response = await fetch(
-          `https://api.themoviedb.org/3/movie/${id}?language=en-US&append_to_response=credits,videos,similar`,
-          { headers: { Authorization: TOKEN } },
-        );
-        const data = (await response.json()) as MovieDetail;
-        setMovie(data);
+        // Movie detail + videos хоёуланг зэрэг fetch хийх
+        const [movieRes, videoRes] = await Promise.all([
+          fetch(
+            `https://api.themoviedb.org/3/movie/${id}?language=en-US&append_to_response=credits,similar`,
+            { headers: { Authorization: TOKEN } },
+          ),
+          fetch(
+            `https://api.themoviedb.org/3/movie/${id}/videos?language=en-US`,
+            { headers: { Authorization: TOKEN } },
+          ),
+        ]);
+
+        const movieData = (await movieRes.json()) as MovieDetail;
+        const videoData = (await videoRes.json()) as VideoResponse;
+
+        setMovie(movieData);
+
+        // Trailer эхлээд, байхгүй бол Teaser авах
+        const found =
+          videoData.results?.find(
+            (v) => v.type === "Trailer" && v.site === "YouTube",
+          ) ??
+          videoData.results?.find(
+            (v) => v.type === "Teaser" && v.site === "YouTube",
+          ) ??
+          null;
+        setTrailer(found);
       } catch (error) {
         console.error(error);
       } finally {
         setLoading(false);
       }
     };
-    if (id) getMovie();
+    if (id) load();
   }, [id]);
+
+  // Escape дарахад player хаах
+  useEffect(() => {
+    const fn = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowPlayer(false);
+    };
+    window.addEventListener("keydown", fn);
+    return () => window.removeEventListener("keydown", fn);
+  }, []);
 
   if (loading) return <MovieDetailSkeleton />;
 
@@ -108,9 +145,6 @@ export default function MovieDetailsPage() {
     )
     .slice(0, 3);
   const stars = (movie.credits?.cast ?? []).slice(0, 3);
-  const trailer = movie.videos?.results?.find(
-    (v) => v.type === "Trailer" && v.site === "YouTube",
-  );
   const similarMovies = (movie.similar?.results ?? [])
     .filter((m) => m.poster_path)
     .slice(0, 5);
@@ -121,8 +155,41 @@ export default function MovieDetailsPage() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
+      <Navbar />
+      {/* ── ReactPlayer Modal ── */}
+      {showPlayer && trailer && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm"
+          onClick={() => setShowPlayer(false)}
+          onKeyDown={(e) => e.key === "Enter" && setShowPlayer(false)}
+        >
+          <div
+            className="relative w-full max-w-5xl px-4"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setShowPlayer(false)}
+              className="absolute -top-10 right-4 rounded-full p-1 text-white hover:text-gray-300"
+            >
+              <X size={28} />
+            </button>
+            <div className="aspect-video w-full overflow-hidden rounded-2xl shadow-2xl">
+              <ReactPlayer
+                src={`https://www.youtube.com/watch?v=${trailer.key}`}
+                width="100%"
+                height="100%"
+                playing
+                controls
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mx-auto max-w-6xl px-6 py-10">
-        {/* Title row: left = title+meta, right = rating */}
+        {/* Title + Rating */}
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold">{movie.title}</h1>
@@ -144,8 +211,6 @@ export default function MovieDetailsPage() {
               )}
             </div>
           </div>
-
-          {/* Rating — top right */}
           <div className="flex shrink-0 flex-col items-end gap-0.5">
             <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Rating
@@ -161,9 +226,8 @@ export default function MovieDetailsPage() {
           </div>
         </div>
 
-        {/* Poster + Backdrop — both 430px tall */}
+        {/* Poster + Backdrop */}
         <div className="mb-5 flex gap-3">
-          {/* Poster */}
           <div className="shrink-0">
             <Image
               src={`${IMAGE}${movie.poster_path}`}
@@ -175,7 +239,6 @@ export default function MovieDetailsPage() {
             />
           </div>
 
-          {/* Backdrop */}
           <div className="relative flex-1 overflow-hidden rounded-xl">
             <Image
               src={`${BACKDROP}${movie.backdrop_path}`}
@@ -190,16 +253,11 @@ export default function MovieDetailsPage() {
             {trailer && (
               <button
                 type="button"
-                onClick={() =>
-                  window.open(
-                    `https://www.youtube.com/watch?v=${trailer.key}`,
-                    "_blank",
-                  )
-                }
+                onClick={() => setShowPlayer(true)}
                 className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-black/55 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-black/75"
               >
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/90">
-                  <Play size={12} className="fill-black text-black ml-0.5" />
+                  <Play size={12} className="ml-0.5 fill-black text-black" />
                 </div>
                 Play trailer · {trailer.name?.match(/\d+:\d+/)?.[0] ?? "2:35"}
               </button>
@@ -207,7 +265,7 @@ export default function MovieDetailsPage() {
           </div>
         </div>
 
-        {/* Genre tags */}
+        {/* Genres */}
         {movie.genres && movie.genres.length > 0 && (
           <div className="mb-4 flex flex-wrap gap-2">
             {movie.genres.map((g) => (
@@ -291,11 +349,7 @@ export default function MovieDetailsPage() {
                 <Link key={item.id} href={`/movie/${item.id}`}>
                   <div className="overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
                     <Image
-                      src={
-                        item.poster_path
-                          ? `${IMAGE}${item.poster_path}`
-                          : "/placeholder.jpg"
-                      }
+                      src={`${IMAGE}${item.poster_path}`}
                       alt={item.title}
                       width={500}
                       height={300}

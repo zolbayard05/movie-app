@@ -19,14 +19,15 @@ export default function MovieCard({
     <Link href={`/movie/${id}`}>
       <div className="overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
         {image && (
-          <Image
-            src={image}
-            alt={title}
-            width={500}
-            height={300}
-            className="object-cover"
-            style={{ width: "100%", height: "300px" }}
-          />
+          <div className="relative h-[300px] w-full">
+            <Image
+              src={image}
+              alt={title}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+              className="object-cover"
+            />
+          </div>
         )}
 
         <div className="space-y-2 p-4">
