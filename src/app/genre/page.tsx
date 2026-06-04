@@ -42,7 +42,7 @@ type Genre = {
 };
 
 function GenreResults() {
-  // useSearchParams нь URL-ийн ?genre=... хэсгийг уншиж авна
+  //
   const searchParams = useSearchParams();
   const genreId = searchParams.get("genre") ?? "";
 
@@ -52,13 +52,13 @@ function GenreResults() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  // genreId солигдох бүрт 1-р хуудас руу буцаана
-  // biome-ignore lint/correctness/useExhaustiveDependencies: setPage is stable
+  // genre solih burd ehnii page ruu ochino
+  //
   useEffect(() => {
     setPage(1);
   }, [genreId]);
 
-  // genre-ийн нэрийг авах (id -> name)
+  // genre iig id aar avna
   useEffect(() => {
     const getGenreName = async () => {
       try {
@@ -86,7 +86,7 @@ function GenreResults() {
         { headers: { Authorization: TOKEN } },
       );
 
-      // TMDB-ийн дээд хязгаар нь 500 хуудас
+      // maxdaa 500n huudas duudana
       setTotalPages(Math.min(response.data.total_pages, 500));
 
       const movieData = response.data.results.map((movie: TmdbMovie) => ({
