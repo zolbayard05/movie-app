@@ -3,71 +3,29 @@
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { CarouselContainer } from "@/components/CarouselContainer";
-import CategoryView from "@/components/CategoryPage";
 import Footer from "@/components/Footer";
 import HomePageSkeleton from "@/components/HomePageSkeleton";
 import MovieGroup from "@/components/MovieGroup";
 import Navbar from "@/components/Navbar";
+import { AUTH, type Movie, mapMovie } from "@/lib/tmdb";
 
-export type Movie = {
-  id: number;
-  title: string;
-  rating: number;
-  image: string;
-  backdrop: string;
-  overview: string;
-};
-
-type TmdbMovie = {
-  id: number;
-  title: string;
-  vote_average: number;
-  poster_path: string | null;
-  backdrop_path: string | null;
-  overview: string;
-};
+type Group = "now_playing" | "upcoming" | "popular" | "top_rated";
 
 export default function Home() {
   const [nowPlayingMovies, setNowPlayingMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(true);
   const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>([]);
   const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
   const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([]);
-
-  const [selectedCategory, setSelectedCategory] = useState<{
-    title: string;
-    category: string;
-  } | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchMovies = useCallback(
-    async (
-      group: "now_playing" | "upcoming" | "popular" | "top_rated",
-      setMovieData: (movies: Movie[]) => void,
-    ) => {
+    async (group: Group, setMovieData: (movies: Movie[]) => void) => {
       try {
         const response = await axios.get(
           `https://api.themoviedb.org/3/movie/${group}?language=en-US&page=1`,
-          {
-            headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwOWI4YTA3MzQ4ZGQ0YzI5NDM0ZDNjOTVmZTE4MDM1MCIsIm5iZiI6MTc3OTI3NDQyNS45OSwic3ViIjoiNmEwZDkyYjlmNGM0M2VmMTNjYjgxNWQ3Iiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.-P7ht59CToEV7YtGXVaI6zqc-VOe-Rwkn_x1uLA3n6I`,
-            },
-          },
+          { headers: AUTH },
         );
-
-        const movieData = response.data.results.map((movie: TmdbMovie) => ({
-          id: movie.id,
-          title: movie.title,
-          rating: movie.vote_average,
-          image: movie.poster_path
-            ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-            : "",
-          backdrop: movie.backdrop_path
-            ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
-            : "",
-          overview: movie.overview,
-        }));
-
-        setMovieData(movieData);
+        setMovieData(response.data.results.map(mapMovie));
       } catch (error) {
         console.error(`Failed to fetch ${group}:`, error);
       }
@@ -98,65 +56,32 @@ export default function Home() {
     <main className="min-h-screen bg-background text-foreground">
       <Navbar />
 
-      {selectedCategory ? (
-        <CategoryView
-          title={selectedCategory.title}
-          category={selectedCategory.category}
-          onBack={() => setSelectedCategory(null)}
+      <section className="mx-auto w-full px-6 py-8">
+        <CarouselContainer movies={nowPlayingMovies} />
+      </section>
+
+      <section className="mx-auto max-w-7xl space-y-14 px-6 pb-20">
+        <MovieGroup
+          title="Now Playing"
+          movies={nowPlayingMovies}
+          href="/category?type=now_playing"
         />
-      ) : (
-        <>
-          <section className="mx-auto w-full px-6 py-8">
-            <CarouselContainer movies={nowPlayingMovies} />
-          </section>
-
-          <section className="mx-auto max-w-7xl space-y-14 px-6 pb-20">
-            <MovieGroup
-              title="Now Playing"
-              movies={nowPlayingMovies}
-              onSeeMore={() =>
-                setSelectedCategory({
-                  title: "Now Playing",
-                  category: "now_playing",
-                })
-              }
-            />
-
-            <MovieGroup
-              title="Upcoming"
-              movies={upcomingMovies}
-              onSeeMore={() =>
-                setSelectedCategory({
-                  title: "Upcoming",
-                  category: "upcoming",
-                })
-              }
-            />
-
-            <MovieGroup
-              title="Popular"
-              movies={popularMovies}
-              onSeeMore={() =>
-                setSelectedCategory({
-                  title: "Popular",
-                  category: "popular",
-                })
-              }
-            />
-
-            <MovieGroup
-              title="Top Rated"
-              movies={topRatedMovies}
-              onSeeMore={() =>
-                setSelectedCategory({
-                  title: "Top Rated",
-                  category: "top_rated",
-                })
-              }
-            />
-          </section>
-        </>
-      )}
+        <MovieGroup
+          title="Upcoming"
+          movies={upcomingMovies}
+          href="/category?type=upcoming"
+        />
+        <MovieGroup
+          title="Popular"
+          movies={popularMovies}
+          href="/category?type=popular"
+        />
+        <MovieGroup
+          title="Top Rated"
+          movies={topRatedMovies}
+          href="/category?type=top_rated"
+        />
+      </section>
 
       <Footer />
     </main>

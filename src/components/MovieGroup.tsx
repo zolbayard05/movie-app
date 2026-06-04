@@ -1,31 +1,27 @@
 import { ArrowRight } from "lucide-react";
-import type { Movie } from "@/app/page";
+import Link from "next/link";
+import type { Movie } from "@/lib/tmdb";
 import MovieCard from "./MovieCard";
 
 type MovieGroupProps = {
   title: string;
   movies: Movie[];
-  onSeeMore: () => void;
+  href: string;
 };
 
-export default function MovieGroup({
-  title,
-  movies,
-  onSeeMore,
-}: MovieGroupProps) {
+export default function MovieGroup({ title, movies, href }: MovieGroupProps) {
   return (
     <section className="bg-background text-foreground">
       <div className="mb-5 flex items-center justify-between">
         <h2 className="text-2xl font-bold">{title}</h2>
 
-        <button
-          type="button"
-          onClick={onSeeMore}
+        <Link
+          href={href}
           className="flex items-center gap-2 text-sm font-medium text-primary hover:underline"
         >
           See more
           <ArrowRight size={16} />
-        </button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">

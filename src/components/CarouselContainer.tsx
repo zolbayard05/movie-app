@@ -1,6 +1,5 @@
 import { Play, Star } from "lucide-react";
 import Link from "next/link";
-import type { Movie } from "@/app/page";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -9,6 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import type { Movie } from "@/lib/tmdb";
 
 type CarouselContainerProps = {
   movies: Movie[];

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Figtree, Playfair_Display } from "next/font/google";
+import { Figtree, Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { cn } from "@/lib/utils";
 
 const playfairDisplayHeading = Playfair_Display({
   subsets: ["latin"],
