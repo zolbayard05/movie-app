@@ -10,7 +10,6 @@ import Navbar from "@/components/Navbar";
 import { AUTH, type Genre, MAX_PAGES, type Movie, mapMovie } from "@/lib/tmdb";
 
 function GenreResults() {
-  // URL-ийн ?genre=... нь зөвхөн ЭХНИЙ сонголтыг өгнө
   const searchParams = useSearchParams();
   const initialGenre = searchParams.get("genre") ?? "";
 
@@ -22,7 +21,6 @@ function GenreResults() {
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // бүх genre-ийн жагсаалтыг нэг удаа татна (sidebar + нэр)
   useEffect(() => {
     const getGenres = async () => {
       try {
@@ -38,17 +36,14 @@ function GenreResults() {
     getGenres();
   }, []);
 
-  // URL-ийн genre солигдоход (navbar-аас сонгоход) сонголтыг шинэчилнэ
   useEffect(() => {
     setSelectedGenres(initialGenre ? [Number(initialGenre)] : []);
     setPage(1);
   }, [initialGenre]);
 
-  // discover endpoint-оор СЕРВЕР талд шүүж, бүх тохирох киног хуудаслана
   const fetchMovies = useCallback(async () => {
     setLoading(true);
     try {
-      // олон genre-г таслалаар нэгтгэнэ → AND шүүлт (28,35)
       const withGenres = selectedGenres.length
         ? `&with_genres=${selectedGenres.join(",")}`
         : "";
@@ -56,9 +51,9 @@ function GenreResults() {
         `https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&page=${page}${withGenres}`,
         { headers: AUTH },
       );
-      // хамгийн ихдээ ~2000 кино (100 хуудас)
+
       setTotalPages(Math.min(response.data.total_pages, MAX_PAGES));
-      // харагдах тоог ч хязгаартай уялдуулна (100 хуудас × 20)
+
       setTotalResults(Math.min(response.data.total_results, MAX_PAGES * 20));
       setMovies(response.data.results.map(mapMovie));
     } catch (error) {
@@ -72,7 +67,6 @@ function GenreResults() {
     fetchMovies();
   }, [fetchMovies]);
 
-  // genre дарах бүрт 1-р хуудаснаас эхэлж дахин татна
   const toggleGenre = (id: number) => {
     setPage(1);
     setSelectedGenres((prev) =>
@@ -85,7 +79,6 @@ function GenreResults() {
     setSelectedGenres([]);
   };
 
-  // сонгосон genre-уудын нэр (гарчигт)
   const selectedNames = useMemo(
     () =>
       genres.filter((g) => selectedGenres.includes(g.id)).map((g) => g.name),
@@ -132,7 +125,7 @@ export default function GenrePage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <Navbar />
-      {/* useSearchParams ашигладаг тул заавал Suspense-ээр ороох ёстой */}
+
       <Suspense
         fallback={
           <div className="py-20 text-center text-muted-foreground">

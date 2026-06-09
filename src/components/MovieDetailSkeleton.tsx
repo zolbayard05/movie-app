@@ -4,11 +4,9 @@ export default function MovieDetailSkeleton() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-4xl px-6 py-10">
-        {/* Title + meta */}
         <Skeleton className="mb-2 h-9 w-64" />
         <Skeleton className="mb-6 h-4 w-48" />
 
-        {/* Poster + backdrop row */}
         <div className="mb-6 flex gap-4">
           <Skeleton className="h-[220px] w-[150px] shrink-0 rounded-xl" />
           <Skeleton className="h-[220px] flex-1 rounded-xl" />

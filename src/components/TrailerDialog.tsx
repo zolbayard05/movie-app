@@ -30,7 +30,6 @@ export default function TrailerDialog({ videoKey, open, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      {/* Бараан дэвсгэр — дарвал хаагдана */}
       <button
         type="button"
         aria-label="Close trailer"
@@ -38,7 +37,6 @@ export default function TrailerDialog({ videoKey, open, onClose }: Props) {
         className="absolute inset-0 bg-black/80"
       />
 
-      {/* Видео */}
       <div className="relative z-10 aspect-video w-full max-w-4xl overflow-hidden rounded-xl bg-black shadow-2xl">
         <button
           type="button"

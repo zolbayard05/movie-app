@@ -9,7 +9,6 @@ import Navbar from "@/components/Navbar";
 import { AUTH, type Genre, type Movie, mapMovie } from "@/lib/tmdb";
 
 function SearchResults() {
-  // useSearchParams нь URL-ийн ?query=... хэсгийг уншиж авна
   const searchParams = useSearchParams();
   const query = searchParams.get("query") ?? "";
 
@@ -18,7 +17,6 @@ function SearchResults() {
   const [selectedGenres, setSelectedGenres] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // genre жагсаалтыг нэг удаа татна (id -> name)
   useEffect(() => {
     const getGenres = async () => {
       try {
@@ -34,11 +32,10 @@ function SearchResults() {
     getGenres();
   }, []);
 
-  // хайлтын үр дүнг татна
   useEffect(() => {
     const searchMovies = async () => {
       setLoading(true);
-      setSelectedGenres([]); // шинэ хайлт хийхэд genre шүүлтийг цэвэрлэнэ
+      setSelectedGenres([]);
       try {
         const response = await axios.get(
           `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(
@@ -62,13 +59,11 @@ function SearchResults() {
     }
   }, [query]);
 
-  // зөвхөн үр дүнд байгаа genre-уудыг шүүлтийн товч болгож харуулна
   const availableGenres = useMemo(
     () => genres.filter((g) => movies.some((m) => m.genreIds.includes(g.id))),
     [genres, movies],
   );
 
-  // сонгосон бүх genre-г агуулсан кино (давхар шүүлт = AND)
   const filteredMovies = useMemo(() => {
     if (selectedGenres.length === 0) return movies;
     return movies.filter((m) =>
@@ -118,7 +113,7 @@ export default function SearchPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <Navbar />
-      {/* useSearchParams ашигладаг тул заавал Suspense-ээр ороох ёстой */}
+
       <Suspense
         fallback={
           <div className="py-20 text-center text-muted-foreground">

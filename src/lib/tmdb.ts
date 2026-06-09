@@ -5,10 +5,8 @@ export const AUTH = { Authorization: TOKEN };
 export const POSTER = "https://image.tmdb.org/t/p/w500";
 export const BACKDROP = "https://image.tmdb.org/t/p/original";
 
-// Хамгийн ихдээ 100 хуудас = ~2000 кино (TMDB-ийн 500 хязгаарын оронд)
 export const MAX_PAGES = 100;
 
-// "Орчин үеийн" гэж сүүлийн 10 жилийг тооцно (хүсвэл тоог нь өөрчилж болно)
 export const MODERN_FROM = `${new Date().getFullYear() - 10}-01-01`;
 
 export type Movie = {
@@ -36,7 +34,6 @@ export type TmdbMovie = {
   genre_ids?: number[];
 };
 
-// TMDB-ийн movie-г апп дотор ашиглах хэлбэрт хөрвүүлнэ
 export function mapMovie(m: TmdbMovie): Movie {
   return {
     id: m.id,
@@ -48,8 +45,6 @@ export function mapMovie(m: TmdbMovie): Movie {
     genreIds: m.genre_ids ?? [],
   };
 }
-
-// ===== Дэлгэрэнгүй хуудасны type-ууд =====
 
 export type CrewMember = { id: number; name: string; job: string };
 export type CastMember = { id: number; name: string };

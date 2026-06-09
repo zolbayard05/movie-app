@@ -26,7 +26,6 @@ export default function MoviePagination({
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // одоогийн хуудасны эргэн тойрны дугаарууд (page ± 2)
   const items: number[] = [];
   for (
     let i = Math.max(1, page - 2);

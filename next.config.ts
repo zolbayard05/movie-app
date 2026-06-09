@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Dev үед утас/бусад төхөөрөмжөөс (ижил Wi-Fi) нэвтрэхийг зөвшөөрнө
   allowedDevOrigins: ["192.168.1.6"],
   turbopack: {
     root: __dirname,

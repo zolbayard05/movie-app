@@ -19,7 +19,6 @@ const TITLES: Record<string, string> = {
 };
 
 function CategoryResults() {
-  // useSearchParams нь URL-ийн ?type=... хэсгийг уншиж авна
   const searchParams = useSearchParams();
   const type = searchParams.get("type") ?? "popular";
   const title = TITLES[type] ?? "Movies";
@@ -31,7 +30,6 @@ function CategoryResults() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  // genre жагсаалтыг нэг удаа татна
   useEffect(() => {
     const getGenres = async () => {
       try {
@@ -47,8 +45,6 @@ function CategoryResults() {
     getGenres();
   }, []);
 
-  // type солигдоход хуудас ба genre шүүлтийг цэвэрлэнэ
-  // biome-ignore lint/correctness/useExhaustiveDependencies: type солигдоход reset
   useEffect(() => {
     setPage(1);
     setSelectedGenres([]);
@@ -74,13 +70,11 @@ function CategoryResults() {
     fetchMovies();
   }, [fetchMovies]);
 
-  // зөвхөн үр дүнд байгаа genre-уудыг шүүлтийн товч болгоно
   const availableGenres = useMemo(
     () => genres.filter((g) => movies.some((m) => m.genreIds.includes(g.id))),
     [genres, movies],
   );
 
-  // сонгосон бүх genre-г агуулсан кино (давхар шүүлт = AND)
   const filteredMovies = useMemo(() => {
     if (selectedGenres.length === 0) return movies;
     return movies.filter((m) =>
@@ -137,7 +131,7 @@ export default function CategoryPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <Navbar />
-      {/* useSearchParams ашигладаг тул заавал Suspense-ээр ороох ёстой */}
+
       <Suspense
         fallback={
           <div className="py-20 text-center text-muted-foreground">

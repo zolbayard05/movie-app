@@ -13,7 +13,6 @@ export default function GenreMenu() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // genre жагсаалтыг нэг удаа татна
   useEffect(() => {
     const getGenres = async () => {
       try {
@@ -29,7 +28,6 @@ export default function GenreMenu() {
     getGenres();
   }, []);
 
-  // гадна дарвал хаагдана
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) {

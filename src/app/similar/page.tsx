@@ -19,26 +19,22 @@ import {
 } from "@/lib/tmdb";
 
 function SimilarResults() {
-  // useSearchParams нь URL-ийн ?movie=... хэсгийг уншиж авна
   const searchParams = useSearchParams();
   const movieId = searchParams.get("movie") ?? "";
 
   const [movies, setMovies] = useState<Movie[]>([]);
   const [movieTitle, setMovieTitle] = useState("");
-  // null = эх кино хараахан ачаалаагүй (genre мэдэгдэхгүй)
+
   const [movieGenres, setMovieGenres] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  // movieId солигдоход 1-р хуудас руу буцаана
-  // biome-ignore lint/correctness/useExhaustiveDependencies: movieId солигдоход reset
   useEffect(() => {
     setPage(1);
     setMovieGenres(null);
   }, [movieId]);
 
-  // эх киноны нэр + genre-уудыг авах
   useEffect(() => {
     const getMovie = async () => {
       try {
@@ -61,7 +57,7 @@ function SimilarResults() {
   }, [movieId]);
 
   const fetchSimilar = useCallback(async () => {
-    if (movieGenres === null) return; // эх кино ачаалагдтал хүлээнэ
+    if (movieGenres === null) return;
     setLoading(true);
     try {
       const withGenres = movieGenres ? `&with_genres=${movieGenres}` : "";
@@ -69,7 +65,7 @@ function SimilarResults() {
         `https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&primary_release_date.gte=${MODERN_FROM}&page=${page}${withGenres}`,
         { headers: AUTH },
       );
-      // хамгийн ихдээ ~2000 кино (100 хуудас)
+
       setTotalPages(Math.min(response.data.total_pages, MAX_PAGES));
       setMovies(
         response.data.results
@@ -135,7 +131,7 @@ export default function SimilarPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <Navbar />
-      {/* useSearchParams ашигладаг тул заавал Suspense-ээр ороох ёстой */}
+
       <Suspense
         fallback={
           <div className="py-20 text-center text-muted-foreground">

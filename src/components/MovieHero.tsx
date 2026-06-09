@@ -26,7 +26,6 @@ export default function MovieHero({ movie, trailer }: Props) {
 
   return (
     <>
-      {/* Гарчиг + үнэлгээ */}
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold md:text-3xl">{movie.title}</h1>

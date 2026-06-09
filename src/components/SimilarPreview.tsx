@@ -23,7 +23,6 @@ export default function SimilarPreview({ movieId, genreIds }: Props) {
   const [items, setItems] = useState<Item[]>([]);
   const [hasMore, setHasMore] = useState(false);
 
-  // массивын оронд тогтвортой string ашиглана (deps-д зориулж)
   const genreKey = genreIds.slice(0, 3).join(",");
 
   useEffect(() => {
@@ -35,7 +34,6 @@ export default function SimilarPreview({ movieId, genreIds }: Props) {
           { headers: AUTH },
         );
 
-        // постертой + энэ кино биш
         const filtered = response.data.results.filter(
           (m: TmdbMovie) => m.poster_path && String(m.id) !== movieId,
         );

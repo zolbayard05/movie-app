@@ -4,7 +4,6 @@ type Props = {
   credits?: { crew: CrewMember[]; cast: CastMember[] };
 };
 
-// нэрсийг "·"-ээр тусгаарлаж харуулна
 function NameList({ people }: { people: { id: number; name: string }[] }) {
   return (
     <span className="text-muted-foreground">

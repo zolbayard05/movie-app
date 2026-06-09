@@ -33,7 +33,6 @@ export default function SearchBox() {
   const [show, setShow] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // бичих бүрт kino-г санал болгоно (debounce-той)
   useEffect(() => {
     const value = search.trim();
     if (!value) {
@@ -41,7 +40,6 @@ export default function SearchBox() {
       return;
     }
 
-    // 300мс бичихгүй байж байж API дуудна
     const timer = setTimeout(async () => {
       try {
         const response = await axios.get(
@@ -69,7 +67,6 @@ export default function SearchBox() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  // гадна дарвал хаагдана
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) {
