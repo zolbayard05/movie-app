@@ -7,21 +7,22 @@ import Footer from "@/components/Footer";
 import MoviePagination from "@/components/MoviePagination";
 import MovieResults from "@/components/MovieResults";
 import Navbar from "@/components/Navbar";
-import { AUTH, type Genre, type Movie, mapMovie } from "@/lib/tmdb";
+import { AUTH, type Genre, MAX_PAGES, type Movie, mapMovie } from "@/lib/tmdb";
 
 function GenreResults() {
-  // useSearchParams нь URL-ийн ?genre=... хэсгийг уншиж авна
+  // URL-ийн ?genre=... нь зөвхөн ЭХНИЙ сонголтыг өгнө
   const searchParams = useSearchParams();
-  const genreId = searchParams.get("genre") ?? "";
+  const initialGenre = searchParams.get("genre") ?? "";
 
-  const [movies, setMovies] = useState<Movie[]>([]);
   const [genres, setGenres] = useState<Genre[]>([]);
   const [selectedGenres, setSelectedGenres] = useState<number[]>([]);
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // genre жагсаалтыг нэг удаа татна (нэр болон sidebar-т ашиглана)
+  // бүх genre-ийн жагсаалтыг нэг удаа татна (sidebar + нэр)
   useEffect(() => {
     const getGenres = async () => {
       try {
@@ -37,63 +38,68 @@ function GenreResults() {
     getGenres();
   }, []);
 
-  // genreId солигдоход хуудас ба нэмэлт шүүлтийг цэвэрлэнэ
-  // biome-ignore lint/correctness/useExhaustiveDependencies: genreId солигдоход reset
+  // URL-ийн genre солигдоход (navbar-аас сонгоход) сонголтыг шинэчилнэ
   useEffect(() => {
+    setSelectedGenres(initialGenre ? [Number(initialGenre)] : []);
     setPage(1);
-    setSelectedGenres([]);
-  }, [genreId]);
+  }, [initialGenre]);
 
+  // discover endpoint-оор СЕРВЕР талд шүүж, бүх тохирох киног хуудаслана
   const fetchMovies = useCallback(async () => {
     setLoading(true);
     try {
+      // олон genre-г таслалаар нэгтгэнэ → AND шүүлт (28,35)
+      const withGenres = selectedGenres.length
+        ? `&with_genres=${selectedGenres.join(",")}`
+        : "";
       const response = await axios.get(
-        `https://api.themoviedb.org/3/discover/movie?with_genres=${genreId}&language=en-US&sort_by=popularity.desc&page=${page}`,
+        `https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&page=${page}${withGenres}`,
         { headers: AUTH },
       );
-      setTotalPages(Math.min(response.data.total_pages, 500));
+      // хамгийн ихдээ ~2000 кино (100 хуудас)
+      setTotalPages(Math.min(response.data.total_pages, MAX_PAGES));
+      // харагдах тоог ч хязгаартай уялдуулна (100 хуудас × 20)
+      setTotalResults(Math.min(response.data.total_results, MAX_PAGES * 20));
       setMovies(response.data.results.map(mapMovie));
     } catch (error) {
       console.error("Failed to fetch genre movies:", error);
     } finally {
       setLoading(false);
     }
-  }, [genreId, page]);
+  }, [selectedGenres, page]);
 
   useEffect(() => {
-    if (genreId) fetchMovies();
-  }, [fetchMovies, genreId]);
+    fetchMovies();
+  }, [fetchMovies]);
 
-  // одоогийн genre-ийн нэр
-  const genreName = useMemo(
-    () => genres.find((g) => String(g.id) === genreId)?.name ?? "Genre",
-    [genres, genreId],
-  );
-
-  // зөвхөн үр дүнд байгаа genre-уудыг шүүлтийн товч болгоно
-  const availableGenres = useMemo(
-    () => genres.filter((g) => movies.some((m) => m.genreIds.includes(g.id))),
-    [genres, movies],
-  );
-
-  // сонгосон бүх genre-г агуулсан кино (давхар шүүлт = AND)
-  const filteredMovies = useMemo(() => {
-    if (selectedGenres.length === 0) return movies;
-    return movies.filter((m) =>
-      selectedGenres.every((id) => m.genreIds.includes(id)),
-    );
-  }, [movies, selectedGenres]);
-
+  // genre дарах бүрт 1-р хуудаснаас эхэлж дахин татна
   const toggleGenre = (id: number) => {
+    setPage(1);
     setSelectedGenres((prev) =>
       prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id],
     );
   };
 
+  const clearGenres = () => {
+    setPage(1);
+    setSelectedGenres([]);
+  };
+
+  // сонгосон genre-уудын нэр (гарчигт)
+  const selectedNames = useMemo(
+    () =>
+      genres.filter((g) => selectedGenres.includes(g.id)).map((g) => g.name),
+    [genres, selectedGenres],
+  );
+
   return (
     <section className="mx-auto max-w-7xl px-6 py-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">{genreName}</h1>
+        <h1 className="text-3xl font-bold">
+          {selectedNames.length > 0
+            ? `${totalResults} titles in "${selectedNames.join(", ")}"`
+            : "Movies"}
+        </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Page {page} of {totalPages || 1}
         </p>
@@ -105,11 +111,11 @@ function GenreResults() {
         </div>
       ) : (
         <MovieResults
-          movies={filteredMovies}
-          availableGenres={availableGenres}
+          movies={movies}
+          availableGenres={genres}
           selectedGenres={selectedGenres}
           onToggle={toggleGenre}
-          onClear={() => setSelectedGenres([])}
+          onClear={clearGenres}
         />
       )}
 

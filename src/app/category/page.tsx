@@ -9,7 +9,7 @@ import MoviePagination from "@/components/MoviePagination";
 import MovieResults from "@/components/MovieResults";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { AUTH, type Genre, type Movie, mapMovie } from "@/lib/tmdb";
+import { AUTH, type Genre, MAX_PAGES, type Movie, mapMovie } from "@/lib/tmdb";
 
 const TITLES: Record<string, string> = {
   now_playing: "Now Playing",
@@ -61,7 +61,7 @@ function CategoryResults() {
         `https://api.themoviedb.org/3/movie/${type}?language=en-US&page=${page}`,
         { headers: AUTH },
       );
-      setTotalPages(Math.min(response.data.total_pages, 500));
+      setTotalPages(Math.min(response.data.total_pages, MAX_PAGES));
       setMovies(response.data.results.map(mapMovie));
     } catch (error) {
       console.error("Failed to fetch category movies:", error);

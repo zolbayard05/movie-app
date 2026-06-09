@@ -94,8 +94,8 @@ export default function SearchBox() {
   };
 
   return (
-    <div className="relative" ref={ref}>
-      <InputGroup className="w-[380px] rounded-xl bg-background">
+    <div className="relative w-full md:w-auto" ref={ref}>
+      <InputGroup className="w-full rounded-xl bg-background md:w-[380px]">
         <InputGroupInput
           placeholder="Search..."
           value={search}

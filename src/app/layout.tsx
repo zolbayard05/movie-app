@@ -25,7 +25,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Movie App",
+  title: "ZMovie",
   description: "Movie App",
 };
 

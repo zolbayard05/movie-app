@@ -21,7 +21,7 @@ export default function MovieDetailsPage() {
     const getMovie = async () => {
       try {
         const response = await fetch(
-          `https://api.themoviedb.org/3/movie/${id}?language=en-US&append_to_response=credits,videos,similar`,
+          `https://api.themoviedb.org/3/movie/${id}?language=en-US&append_to_response=credits,videos`,
           { headers: AUTH },
         );
         setMovie((await response.json()) as MovieDetail);
@@ -90,7 +90,10 @@ export default function MovieDetailsPage() {
 
         <MovieCredits credits={movie.credits} />
 
-        <SimilarPreview movieId={id} similar={movie.similar?.results ?? []} />
+        <SimilarPreview
+          movieId={id}
+          genreIds={(movie.genres ?? []).map((g) => g.id)}
+        />
       </div>
 
       <Footer />

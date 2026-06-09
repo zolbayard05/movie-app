@@ -37,7 +37,7 @@ export default function MoviePagination({
   }
 
   return (
-    <div className="mt-10 flex justify-end">
+    <div className="mt-10 flex justify-center md:justify-end">
       <Pagination>
         <PaginationContent>
           <PaginationItem>

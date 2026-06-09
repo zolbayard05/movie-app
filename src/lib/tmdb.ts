@@ -5,6 +5,12 @@ export const AUTH = { Authorization: TOKEN };
 export const POSTER = "https://image.tmdb.org/t/p/w500";
 export const BACKDROP = "https://image.tmdb.org/t/p/original";
 
+// Хамгийн ихдээ 100 хуудас = ~2000 кино (TMDB-ийн 500 хязгаарын оронд)
+export const MAX_PAGES = 100;
+
+// "Орчин үеийн" гэж сүүлийн 10 жилийг тооцно (хүсвэл тоог нь өөрчилж болно)
+export const MODERN_FROM = `${new Date().getFullYear() - 10}-01-01`;
+
 export type Movie = {
   id: number;
   title: string;

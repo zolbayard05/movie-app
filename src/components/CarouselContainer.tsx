@@ -23,15 +23,17 @@ export function CarouselContainer({ movies }: CarouselContainerProps) {
         {heroMovies.map((movie) => (
           <CarouselItem key={movie.id}>
             <div
-              className="relative h-200 w-full bg-cover bg-center"
+              className="relative h-[440px] w-full bg-cover bg-center md:h-200"
               style={{ backgroundImage: `url(${movie.backdrop})` }}
             >
               <div className="absolute inset-0 bg-black/30" />
 
-              <div className="relative z-10 flex h-full max-w-300 flex-col justify-center px-10 text-white md:px-24">
+              <div className="relative z-10 flex h-full max-w-300 flex-col justify-center px-6 text-white md:px-24">
                 <p className="text-lg">Now Playing:</p>
 
-                <h1 className="text-5xl font-bold">{movie.title}</h1>
+                <h1 className="text-3xl font-bold md:text-5xl">
+                  {movie.title}
+                </h1>
 
                 <div className="mt-4 flex items-center gap-2">
                   <Star className="fill-yellow-400 text-yellow-400" />
@@ -54,8 +56,8 @@ export function CarouselContainer({ movies }: CarouselContainerProps) {
         ))}
       </CarouselContent>
 
-      <CarouselPrevious className="left-10" />
-      <CarouselNext className="right-10" />
+      <CarouselPrevious className="left-4 md:left-10" />
+      <CarouselNext className="right-4 md:right-10" />
     </Carousel>
   );
 }

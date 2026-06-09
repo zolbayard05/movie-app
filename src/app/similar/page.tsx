@@ -9,7 +9,14 @@ import MovieCard from "@/components/MovieCard";
 import MoviePagination from "@/components/MoviePagination";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
-import { AUTH, type Movie, mapMovie, type TmdbMovie } from "@/lib/tmdb";
+import {
+  AUTH,
+  MAX_PAGES,
+  MODERN_FROM,
+  type Movie,
+  mapMovie,
+  type TmdbMovie,
+} from "@/lib/tmdb";
 
 function SimilarResults() {
   // useSearchParams нь URL-ийн ?movie=... хэсгийг уншиж авна
@@ -18,6 +25,8 @@ function SimilarResults() {
 
   const [movies, setMovies] = useState<Movie[]>([]);
   const [movieTitle, setMovieTitle] = useState("");
+  // null = эх кино хараахан ачаалаагүй (genre мэдэгдэхгүй)
+  const [movieGenres, setMovieGenres] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -26,36 +35,45 @@ function SimilarResults() {
   // biome-ignore lint/correctness/useExhaustiveDependencies: movieId солигдоход reset
   useEffect(() => {
     setPage(1);
+    setMovieGenres(null);
   }, [movieId]);
 
-  // эх киноны нэрийг авах (гарчигт ашиглана)
+  // эх киноны нэр + genre-уудыг авах
   useEffect(() => {
-    const getMovieTitle = async () => {
+    const getMovie = async () => {
       try {
         const response = await axios.get(
           `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`,
           { headers: AUTH },
         );
         setMovieTitle(response.data.title ?? "");
+        setMovieGenres(
+          (response.data.genres ?? [])
+            .slice(0, 3)
+            .map((g: { id: number }) => g.id)
+            .join(","),
+        );
       } catch (error) {
-        console.error("Failed to fetch movie title:", error);
+        console.error("Failed to fetch movie:", error);
       }
     };
-    if (movieId) getMovieTitle();
+    if (movieId) getMovie();
   }, [movieId]);
 
   const fetchSimilar = useCallback(async () => {
+    if (movieGenres === null) return; // эх кино ачаалагдтал хүлээнэ
     setLoading(true);
     try {
+      const withGenres = movieGenres ? `&with_genres=${movieGenres}` : "";
       const response = await axios.get(
-        `https://api.themoviedb.org/3/movie/${movieId}/similar?language=en-US&page=${page}`,
+        `https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&primary_release_date.gte=${MODERN_FROM}&page=${page}${withGenres}`,
         { headers: AUTH },
       );
-      // TMDB-ийн дээд хязгаар нь 500 хуудас
-      setTotalPages(Math.min(response.data.total_pages, 500));
+      // хамгийн ихдээ ~2000 кино (100 хуудас)
+      setTotalPages(Math.min(response.data.total_pages, MAX_PAGES));
       setMovies(
         response.data.results
-          .filter((m: TmdbMovie) => m.poster_path)
+          .filter((m: TmdbMovie) => m.poster_path && String(m.id) !== movieId)
           .map(mapMovie),
       );
     } catch (error) {
@@ -63,11 +81,11 @@ function SimilarResults() {
     } finally {
       setLoading(false);
     }
-  }, [movieId, page]);
+  }, [movieGenres, page, movieId]);
 
   useEffect(() => {
-    if (movieId) fetchSimilar();
-  }, [fetchSimilar, movieId]);
+    fetchSimilar();
+  }, [fetchSimilar]);
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-12">
